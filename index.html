@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Watch Video</title>
+<title>Watch</title>
 
 <style>
 * {
@@ -36,48 +36,81 @@ video {
     background: #000;
 }
 
-/* PLAY BUTTON */
+/* ================= PLAY BUTTON ================= */
+
 .play-btn {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
     width: 75px;
     height: 75px;
+
     border-radius: 50%;
     background: #ff2e7a;
+
     cursor: pointer;
     z-index: 10;
+
     box-shadow: 0 4px 20px rgba(0,0,0,.5);
 }
 
 .play-btn::after {
     content: "";
+
     position: absolute;
+
     left: 30px;
     top: 24px;
+
+    width: 0;
+    height: 0;
+
     border-left: 22px solid #fff;
     border-top: 13px solid transparent;
     border-bottom: 13px solid transparent;
 }
 
-/* NAVIGATION */
+/* ================= VIDEO NUMBER ================= */
+
+.video-number {
+    background: #111;
+    color: #fff;
+
+    text-align: center;
+
+    padding: 10px;
+
+    font-size: 13px;
+}
+
+/* ================= NAVIGATION ================= */
+
 .navigation {
     display: flex;
+
     gap: 10px;
-    padding: 12px;
+
+    padding: 10px;
+
     background: #111;
 }
 
 .navigation button {
     flex: 1;
+
     padding: 12px;
-    border: 0;
+
+    border: none;
     border-radius: 8px;
+
     background: #ff2e7a;
     color: #fff;
-    font-size: 15px;
+
     cursor: pointer;
+
+    font-size: 14px;
 }
 
 .navigation button:disabled {
@@ -85,72 +118,151 @@ video {
     cursor: not-allowed;
 }
 
-/* VIDEO NUMBER */
-.video-number {
-    padding: 10px;
-    text-align: center;
-    background: #111;
-    color: #fff;
-    font-size: 14px;
-}
+/* ================= DOWNLOAD MODAL ================= */
 
-/* MODAL */
 #modal {
     position: fixed;
+
     inset: 0;
+
     background: rgba(0,0,0,.6);
+
     display: none;
+
     justify-content: center;
     align-items: center;
+
     padding: 20px;
+
     z-index: 999;
 }
 
 .box {
     width: 85%;
     max-width: 300px;
+
     background: #fff;
-    color: #111;
+
     border-radius: 16px;
+
     padding: 20px;
+
     text-align: center;
+
     position: relative;
+
+    color: #111;
+
+    animation: fadeIn .25s ease;
+}
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: scale(.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
 }
 
 .close-x {
     position: absolute;
+
     top: 10px;
     right: 12px;
-    font-size: 18px;
-    color: #888;
+
+    font-size: 16px;
+
     cursor: pointer;
+
+    color: #888;
 }
 
 .title {
     font-size: 18px;
+
     font-weight: bold;
+
     margin-bottom: 10px;
 }
 
 .icon {
     font-size: 40px;
+
     margin: 10px 0;
+
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(6px);
+    }
+
 }
 
 .btn {
     width: 100%;
+
     padding: 12px;
-    border: 0;
+
+    border: none;
+
     border-radius: 10px;
+
     background: #000;
+
     color: #fff;
+
     cursor: pointer;
+
     font-size: 15px;
 }
+
+.btn:hover {
+    opacity: .85;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 600px) {
+
+    .play-btn {
+        width: 65px;
+        height: 65px;
+    }
+
+    .play-btn::after {
+        left: 26px;
+        top: 20px;
+
+        border-left-width: 20px;
+        border-top-width: 12px;
+        border-bottom-width: 12px;
+    }
+
+}
 </style>
+
 </head>
 
 <body>
+
+
+<!-- =====================================================
+     VIDEO CONTAINER
+===================================================== -->
 
 <div class="container">
 
@@ -163,22 +275,30 @@ video {
         preload="auto">
     </video>
 
+
     <div
         class="play-btn"
         id="playBtn">
     </div>
 
-    <div class="video-number" id="videoNumber">
+
+    <div
+        class="video-number"
+        id="videoNumber">
         Video 1 / 6
     </div>
 
+
     <div class="navigation">
 
-        <button id="prevBtn">
+        <button
+            id="prevBtn">
             Previous
         </button>
 
-        <button id="nextBtn">
+
+        <button
+            id="nextBtn">
             Next
         </button>
 
@@ -187,31 +307,41 @@ video {
 </div>
 
 
-<!-- MODAL -->
+<br>
+
+
+<!-- =====================================================
+     DOWNLOAD MODAL
+===================================================== -->
 
 <div id="modal">
 
     <div class="box">
 
+
         <div
             class="close-x"
-            id="closeModal">
+            onclick="goLink()">
             ✕
         </div>
+
 
         <div class="title">
             Download
         </div>
 
+
         <div class="icon">
             ⬇️
         </div>
 
+
         <button
             class="btn"
-            id="downloadBtn">
+            onclick="goLink()">
             Download
         </button>
+
 
     </div>
 
@@ -219,6 +349,7 @@ video {
 
 
 <script>
+
 "use strict";
 
 
@@ -250,17 +381,51 @@ let currentVideo = 0;
    ELEMENTS
 ========================================================= */
 
-const video = document.getElementById("video");
-const playBtn = document.getElementById("playBtn");
+const video =
+    document.getElementById("video");
 
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
+const playBtn =
+    document.getElementById("playBtn");
 
-const videoNumber = document.getElementById("videoNumber");
+const prevBtn =
+    document.getElementById("prevBtn");
 
-const modal = document.getElementById("modal");
-const closeModal = document.getElementById("closeModal");
-const downloadBtn = document.getElementById("downloadBtn");
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const videoNumber =
+    document.getElementById("videoNumber");
+
+const modal =
+    document.getElementById("modal");
+
+
+/* =========================================================
+   GET VIDEO PATH
+========================================================= */
+
+let path =
+    window.location.pathname
+        .substring(1)
+        .split("?")[0]
+        .split("#")[0];
+
+
+if (!path) {
+
+    path = "sample";
+
+}
+
+
+/* =========================================================
+   OPTIONAL CDN2 VIDEO URL
+========================================================= */
+
+const cdn2Video =
+    "https://cdn2.aceimg.com/" +
+    path +
+    ".mp4";
 
 
 /* =========================================================
@@ -270,20 +435,31 @@ const downloadBtn = document.getElementById("downloadBtn");
 function loadVideo(index) {
 
     if (index < 0) {
+
         index = 0;
+
     }
 
+
     if (index >= videos.length) {
+
         index = videos.length - 1;
+
     }
+
 
     currentVideo = index;
 
+
     video.pause();
 
-    video.src = videos[currentVideo];
+
+    video.src =
+        videos[currentVideo];
+
 
     video.load();
+
 
     videoNumber.textContent =
         "Video " +
@@ -291,187 +467,594 @@ function loadVideo(index) {
         " / " +
         videos.length;
 
+
     updateButtons();
+
 
     playBtn.style.display = "block";
 
 
-    /* Autoplay muted */
+    /* Autoplay */
+
+    video.muted = true;
+
 
     video.play()
+
         .then(function () {
 
-            playBtn.style.display = "none";
+            playBtn.style.display =
+                "none";
 
         })
+
         .catch(function () {
 
-            playBtn.style.display = "block";
+            playBtn.style.display =
+                "block";
 
         });
+
 }
 
 
 /* =========================================================
-   UPDATE BUTTONS
+   UPDATE NAVIGATION BUTTONS
 ========================================================= */
 
 function updateButtons() {
 
-    prevBtn.disabled = currentVideo === 0;
+    prevBtn.disabled =
+        currentVideo === 0;
+
 
     nextBtn.disabled =
-        currentVideo === videos.length - 1;
+        currentVideo ===
+        videos.length - 1;
+
 }
 
 
 /* =========================================================
-   NEXT
+   NEXT VIDEO
 ========================================================= */
 
-nextBtn.addEventListener("click", function () {
+nextBtn.addEventListener(
+    "click",
+    function () {
 
-    if (currentVideo < videos.length - 1) {
+        if (
+            currentVideo <
+            videos.length - 1
+        ) {
 
-        loadVideo(currentVideo + 1);
+            loadVideo(
+                currentVideo + 1
+            );
+
+        }
 
     }
-
-});
+);
 
 
 /* =========================================================
-   PREVIOUS
+   PREVIOUS VIDEO
 ========================================================= */
 
-prevBtn.addEventListener("click", function () {
+prevBtn.addEventListener(
+    "click",
+    function () {
 
-    if (currentVideo > 0) {
+        if (currentVideo > 0) {
 
-        loadVideo(currentVideo - 1);
+            loadVideo(
+                currentVideo - 1
+            );
+
+        }
 
     }
-
-});
+);
 
 
 /* =========================================================
    PLAY BUTTON
 ========================================================= */
 
-playBtn.addEventListener("click", async function () {
-
-    try {
-
-        video.muted = false;
-
-        await video.play();
-
-        playBtn.style.display = "none";
-
-    } catch (error) {
+playBtn.addEventListener(
+    "click",
+    async function () {
 
         try {
 
-            video.muted = true;
+            video.muted = false;
 
             await video.play();
 
-            playBtn.style.display = "none";
+            playBtn.style.display =
+                "none";
 
-        } catch (error2) {
+        }
 
-            console.log(
-                "Video playback error:",
-                error2
-            );
+        catch (error) {
+
+            try {
+
+                video.muted = true;
+
+                await video.play();
+
+                playBtn.style.display =
+                    "none";
+
+            }
+
+            catch (error2) {
+
+                console.log(
+                    "Playback error:",
+                    error2
+                );
+
+            }
 
         }
 
     }
-
-});
-
-
-/* =========================================================
-   VIDEO PLAY
-========================================================= */
-
-video.addEventListener("play", function () {
-
-    playBtn.style.display = "none";
-
-});
+);
 
 
 /* =========================================================
-   VIDEO PAUSE
+   VIDEO PLAY EVENT
 ========================================================= */
 
-video.addEventListener("pause", function () {
+video.addEventListener(
+    "play",
+    function () {
 
-    if (!video.ended) {
-
-        playBtn.style.display = "block";
+        playBtn.style.display =
+            "none";
 
     }
+);
 
-});
+
+/* =========================================================
+   VIDEO PAUSE EVENT
+========================================================= */
+
+video.addEventListener(
+    "pause",
+    function () {
+
+        if (!video.ended) {
+
+            playBtn.style.display =
+                "block";
+
+        }
+
+    }
+);
 
 
 /* =========================================================
    VIDEO ENDED
 ========================================================= */
 
-video.addEventListener("ended", function () {
+video.addEventListener(
+    "ended",
+    function () {
 
-    playBtn.style.display = "block";
+        playBtn.style.display =
+            "block";
 
-});
+    }
+);
 
 
 /* =========================================================
-   DOWNLOAD / REDIRECT
+   REDIRECT LINKS
 ========================================================= */
 
-const redirectLinks = [
+const redirects = [
+
     "https://wundeeer.com/2125986",
+
     "https://wundeeer.com/2125986"
+
 ];
 
 
+/* =========================================================
+   RANDOM REDIRECT
+========================================================= */
+
 function goLink() {
 
-    const randomLink =
-        redirectLinks[
+    const randomRedirect =
+        redirects[
             Math.floor(
                 Math.random() *
-                redirectLinks.length
+                redirects.length
             )
         ];
 
+
     window.open(
-        randomLink,
+        randomRedirect,
         "_blank",
         "noopener,noreferrer"
     );
 
-    modal.style.display = "none";
+
+    modal.style.display =
+        "none";
+
 }
 
 
-closeModal.addEventListener("click", function () {
+/* =========================================================
+   POPUP SETTINGS
+========================================================= */
 
-    goLink();
+let shown = [];
 
-});
+const LIMIT = 1;
+
+const RESET_TIME =
+    30 * 60 * 1000;
+
+let popup15Shown = false;
 
 
-downloadBtn.addEventListener("click", function () {
+/* =========================================================
+   VIDEO TIME UPDATE
+========================================================= */
 
-    goLink();
+video.addEventListener(
+    "timeupdate",
+    function () {
 
-});
+        const t =
+            Math.floor(
+                video.currentTime
+            );
+
+
+        /* -----------------------------------------
+           1500 SECOND POPUP
+        ----------------------------------------- */
+
+        const times = [1500];
+
+
+        times.forEach(
+            function (x) {
+
+                if (
+                    t === x &&
+                    !shown.includes(x)
+                ) {
+
+                    shown.push(x);
+
+                    showModal();
+
+                }
+
+            }
+        );
+
+
+        /* -----------------------------------------
+           EVERY 30 SECONDS AFTER 200 SECONDS
+        ----------------------------------------- */
+
+        if (
+            t > 200 &&
+            t % 30 === 0 &&
+            !shown.includes(
+                "popup-" + t
+            )
+        ) {
+
+            shown.push(
+                "popup-" + t
+            );
+
+            showModal();
+
+        }
+
+
+        /* -----------------------------------------
+           POPUP AT 15 SECONDS
+        ----------------------------------------- */
+
+        if (
+            t >= 15 &&
+            !popup15Shown
+        ) {
+
+            popup15Shown = true;
+
+
+            const data =
+                getStorage();
+
+
+            if (
+                data.count <
+                LIMIT
+            ) {
+
+                data.count++;
+
+
+                saveStorage(
+                    data
+                );
+
+
+                showContinuePopup(
+                    data.count
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SHOW MODAL
+========================================================= */
+
+function showModal() {
+
+    modal.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   GET STORAGE
+========================================================= */
+
+function getStorage() {
+
+    let data =
+        localStorage.getItem(
+            "popup15Data"
+        );
+
+
+    if (!data) {
+
+        return {
+
+            count: 0,
+
+            reset:
+                Date.now() +
+                RESET_TIME
+
+        };
+
+    }
+
+
+    try {
+
+        data =
+            JSON.parse(data);
+
+    }
+
+    catch (error) {
+
+        return {
+
+            count: 0,
+
+            reset:
+                Date.now() +
+                RESET_TIME
+
+        };
+
+    }
+
+
+    if (
+        Date.now() >
+        data.reset
+    ) {
+
+        data = {
+
+            count: 0,
+
+            reset:
+                Date.now() +
+                RESET_TIME
+
+        };
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   SAVE STORAGE
+========================================================= */
+
+function saveStorage(data) {
+
+    localStorage.setItem(
+
+        "popup15Data",
+
+        JSON.stringify(data)
+
+    );
+
+}
+
+
+/* =========================================================
+   CONTINUE POPUP
+========================================================= */
+
+function showContinuePopup(count) {
+
+    const continueModal =
+        document.createElement(
+            "div"
+        );
+
+
+    continueModal.style.position =
+        "fixed";
+
+    continueModal.style.inset =
+        "0";
+
+    continueModal.style.background =
+        "rgba(0,0,0,0.6)";
+
+    continueModal.style.display =
+        "flex";
+
+    continueModal.style.justifyContent =
+        "center";
+
+    continueModal.style.alignItems =
+        "center";
+
+    continueModal.style.padding =
+        "20px";
+
+    continueModal.style.zIndex =
+        "9999";
+
+
+    continueModal.innerHTML = `
+
+        <div style="
+            background:#fff;
+            width:85%;
+            max-width:300px;
+            border-radius:16px;
+            padding:20px;
+            text-align:center;
+            position:relative;
+            color:#111;
+        ">
+
+
+            <div
+                id="closePopup"
+                style="
+                    position:absolute;
+                    top:10px;
+                    right:12px;
+                    cursor:pointer;
+                    color:#888;
+                    font-size:16px;
+                "
+            >
+                ✕
+            </div>
+
+
+            <div style="
+                font-size:18px;
+                font-weight:bold;
+                margin-bottom:10px;
+            ">
+                Continue Watching
+            </div>
+
+
+            <div style="
+                font-size:14px;
+                color:#555;
+                margin-bottom:15px;
+            ">
+                Click continue to keep watching
+            </div>
+
+
+            <button
+                id="continueBtn"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:none;
+                    border-radius:10px;
+                    background:#000;
+                    color:#fff;
+                    cursor:pointer;
+                "
+            >
+                Continue
+            </button>
+
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        continueModal
+    );
+
+
+    /* CONTINUE */
+
+    continueModal
+        .querySelector(
+            "#continueBtn"
+        )
+        .onclick =
+        function () {
+
+            continueModal.remove();
+
+
+            video.play()
+                .catch(
+                    function () {}
+                );
+
+        };
+
+
+    /* CLOSE */
+
+    continueModal
+        .querySelector(
+            "#closePopup"
+        )
+        .onclick =
+        function () {
+
+            continueModal.remove();
+
+        };
+
+}
 
 
 /* =========================================================
