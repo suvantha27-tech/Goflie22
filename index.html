@@ -1,52 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Watch</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            background: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            background: #000;
+        }
+
+        video {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 100vh;
+            background: #000;
+        }
+
+        /* PLAY BUTTON */
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: #ff2e7a;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .play-btn:hover {
+            transform: translate(-50%, -50%) scale(1.08);
+        }
+
+        /* PLAY ICON */
+        .play-btn::after {
+            content: "";
+            position: absolute;
+            left: 30px;
+            top: 24px;
+            width: 0;
+            height: 0;
+            border-left: 22px solid #fff;
+            border-top: 13px solid transparent;
+            border-bottom: 13px solid transparent;
+        }
+
+        /* MODAL */
+        #modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 999;
+        }
+
+        .box {
+            width: 85%;
+            max-width: 300px;
+            background: #fff;
+            color: #111;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* CLOSE */
+        .close-x {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        /* DOWNLOAD ICON */
+        .icon {
+            font-size: 40px;
+            margin: 10px 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(6px);
+            }
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #000;
+            color: #fff;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <video
+        id="video"
+        controls
+        autoplay
+        muted
+        playsinline
+        preload="auto">
+    </video>
+
+    <div class="play-btn" id="playBtn"></div>
+
+</div>
+
+
+<!-- DOWNLOAD MODAL -->
+<div id="modal">
+
+    <div class="box">
+
+        <div class="close-x" id="closeModal">✕</div>
+
+        <div class="title">
+            Download
+        </div>
+
+        <div class="icon">
+            ⬇️
+        </div>
+
+        <button class="btn" id="downloadBtn">
+            Download
+        </button>
+
+    </div>
+
+</div>
+
+
 <script>
+"use strict";
+
+/* =========================================================
+   VIDEO
+========================================================= */
+
 const video = document.getElementById("video");
 const playBtn = document.getElementById("playBtn");
+const modal = document.getElementById("modal");
+const closeModal = document.getElementById("closeModal");
+const downloadBtn = document.getElementById("downloadBtn");
 
-// Get video path
-let path = window.location.pathname.substring(1).split("?")[0];
+
+/* =========================================================
+   GET VIDEO PATH
+========================================================= */
+
+let path = window.location.pathname
+    .substring(1)
+    .split("?")[0]
+    .split("#")[0];
 
 if (!path) {
     path = "sample";
 }
 
-// Video URL
+
+/* =========================================================
+   VIDEO URL
+========================================================= */
+
 video.src = "https://cdn2.aceimg.com/" + path + ".mp4";
 
-// Try autoplay
+
+/* =========================================================
+   REDIRECT LINKS
+========================================================= */
+
+const redirects = [
+    "https://wundeeer.com/2125986",
+    "https://wundeeer.com/2125986"
+];
+
+
+/* =========================================================
+   RANDOM REDIRECT
+========================================================= */
+
+function getRandomRedirect() {
+    return redirects[
+        Math.floor(Math.random() * redirects.length)
+    ];
+}
+
+
+/* =========================================================
+   PLAY / AUTOPLAY
+========================================================= */
+
 video.muted = true;
 
-video.play().then(() => {
-    playBtn.style.display = "none";
-}).catch(() => {
-    // Browser blocked autoplay
-    playBtn.style.display = "block";
+video.addEventListener("loadedmetadata", function () {
+
+    video.play()
+        .then(function () {
+
+            playBtn.style.display = "none";
+
+        })
+        .catch(function () {
+
+            playBtn.style.display = "block";
+
+        });
+
 });
 
-// Play button
+
+/* =========================================================
+   PLAY BUTTON
+========================================================= */
+
 playBtn.addEventListener("click", async function () {
+
     try {
+
+        /*
+         * User interaction allows video playback.
+         * First try with sound.
+         */
+
         video.muted = false;
+
         await video.play();
 
         playBtn.style.display = "none";
+
     } catch (error) {
-        // If sound autoplay is blocked, play muted
-        video.muted = true;
-        await video.play();
 
-        playBtn.style.display = "none";
+        /*
+         * If browser blocks sound,
+         * continue playing muted.
+         */
+
+        try {
+
+            video.muted = true;
+
+            await video.play();
+
+            playBtn.style.display = "none";
+
+        } catch (error2) {
+
+            console.log("Video playback failed:", error2);
+
+        }
+
     }
+
 });
 
-// Show button when video is paused
+
+/* =========================================================
+   PAUSE / PLAY BUTTON
+========================================================= */
+
+video.addEventListener("play", function () {
+
+    playBtn.style.display = "none";
+
+});
+
+
 video.addEventListener("pause", function () {
+
     if (!video.ended) {
         playBtn.style.display = "block";
     }
+
 });
 
-// Hide button when video plays
-video.addEventListener("play", function () {
-    playBtn.style.display = "none";
+
+video.addEventListener("ended", function () {
+
+    playBtn.style.display = "block";
+
 });
+
+
+/* =========================================================
+   POPUP SETTINGS
+========================================================= */
+
+let shown = [];
+
+let popup15Shown = false;
+
+const LIMIT = 1;
+
+const RESET_TIME = 30 * 60 * 1000;
+
+
+/* =========================================================
+   TIME UPDATE
+========================================================= */
+
+video.addEventListener("timeupdate", function () {
+
+    const t = Math.floor(video.currentTime);
+
+
+    /* -----------------------------------------
+       ORIGINAL 1500 SECOND POPUP
+    ----------------------------------------- */
+
+    const times = [1500];
+
+    times.forEach(function (x) {
+
+        if (t === x && !shown.includes(x)) {
+
+            shown.push(x);
+
+            showModal();
+
+        }
+
+    });
+
+
+    /* -----------------------------------------
+       POPUP EVERY 30 SECONDS AFTER 200 SECONDS
+    ----------------------------------------- */
+
+    if (
+        t > 200 &&
+        t % 30 === 0 &&
+        !shown.includes("30-" + t)
+    ) {
+
+        shown.push("30-" + t);
+
+        showModal();
+
+    }
+
+
+    /* -----------------------------------------
+       15 SECOND CONTINUE POPUP
+    ----------------------------------------- */
+
+    if (t >= 15 && !popup15Shown) {
+
+        popup15Shown = true;
+
+        const data = getStorage();
+
+        if (data.count < LIMIT) {
+
+            data.count++;
+
+            saveStorage(data);
+
+            showContinuePopup(data.count);
+
+        }
+
+    }
+
+});
+
+
+/* =========================================================
+   SHOW DOWNLOAD MODAL
+========================================================= */
+
+function showModal() {
+
+    modal.style.display = "flex";
+
+}
+
+
+/* =========================================================
+   CLOSE DOWNLOAD MODAL
+========================================================= */
+
+function hideModal() {
+
+    modal.style.display = "none";
+
+}
+
+
+closeModal.addEventListener("click", function () {
+
+    goLink();
+
+});
+
+
+downloadBtn.addEventListener("click", function () {
+
+    goLink();
+
+});
+
+
+/* =========================================================
+   DOWNLOAD / REDIRECT
+========================================================= */
+
+function goLink() {
+
+    const randomLink = getRandomRedirect();
+
+    window.open(
+        randomLink,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+    hideModal();
+
+}
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+function getStorage() {
+
+    let data = localStorage.getItem("popup15Data");
+
+
+    if (!data) {
+
+        return {
+            count: 0,
+            reset: Date.now() + RESET_TIME
+        };
+
+    }
+
+
+    try {
+
+        data = JSON.parse(data);
+
+    } catch (error) {
+
+        data = {
+            count: 0,
+            reset: Date.now() + RESET_TIME
+        };
+
+    }
+
+
+    /* -----------------------------------------
+       RESET AFTER 30 MINUTES
+    ----------------------------------------- */
+
+    if (Date.now() > data.reset) {
+
+        data = {
+            count: 0,
+            reset: Date.now() + RESET_TIME
+        };
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =========================================================
+   SAVE LOCAL STORAGE
+========================================================= */
+
+function saveStorage(data) {
+
+    localStorage.setItem(
+        "popup15Data",
+        JSON.stringify(data)
+    );
+
+}
+
+
+/* =========================================================
+   CONTINUE POPUP
+========================================================= */
+
+function showContinuePopup(count) {
+
+    const popup = document.createElement("div");
+
+    popup.style.position = "fixed";
+    popup.style.inset = "0";
+    popup.style.background = "rgba(0,0,0,0.6)";
+    popup.style.display = "flex";
+    popup.style.justifyContent = "center";
+    popup.style.alignItems = "center";
+    popup.style.padding = "20px";
+    popup.style.zIndex = "9999";
+
+
+    popup.innerHTML = `
+        <div style="
+            background:#fff;
+            width:85%;
+            max-width:300px;
+            border-radius:16px;
+            padding:20px;
+            text-align:center;
+            position:relative;
+            color:#111;
+            animation:fadeIn 0.25s ease;
+        ">
+
+            <div
+                id="closePopup"
+                style="
+                    position:absolute;
+                    top:10px;
+                    right:12px;
+                    cursor:pointer;
+                    color:#888;
+                    font-size:16px;
+                "
+            >
+                ✕
+            </div>
+
+
+            <div style="
+                font-size:18px;
+                font-weight:bold;
+                margin-bottom:10px;
+            ">
+                Continue Watching
+            </div>
+
+
+            <div style="
+                font-size:14px;
+                color:#555;
+                margin-bottom:15px;
+            ">
+                Click continue to keep watching
+            </div>
+
+
+            <button
+                id="continueBtn"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:none;
+                    border-radius:10px;
+                    background:#000;
+                    color:#fff;
+                    cursor:pointer;
+                    font-size:15px;
+                "
+            >
+                Continue
+            </button>
+
+        </div>
+    `;
+
+
+    document.body.appendChild(popup);
+
+
+    /* -----------------------------------------
+       CONTINUE
+    ----------------------------------------- */
+
+    const continueBtn =
+        popup.querySelector("#continueBtn");
+
+
+    continueBtn.addEventListener("click", function () {
+
+        popup.remove();
+
+        /*
+         * Resume video after user interaction.
+         */
+
+        video.play().catch(function () {});
+
+    });
+
+
+    /* -----------------------------------------
+       CLOSE
+    ----------------------------------------- */
+
+    const closePopup =
+        popup.querySelector("#closePopup");
+
+
+    closePopup.addEventListener("click", function () {
+
+        popup.remove();
+
+    });
+
+}
 </script>
+
+</body>
+</html>
